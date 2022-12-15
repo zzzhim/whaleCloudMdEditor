@@ -244,6 +244,11 @@
   resolved "https://registry.yarnpkg.com/@types/katex/-/katex-0.14.0.tgz#b84c0afc3218069a5ad64fe2a95321881021b5fe"
   integrity sha512-+2FW2CcT0K3P+JMR8YG846bmDwplKUTsWgT2ENwdQ1UdVfRk3GQrh6Mi4sTopy30gI8Uau5CEqHTDZ6YvWIUPA==
 
+"@types/keyboardjs@^2.5.0":
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/@types/keyboardjs/-/keyboardjs-2.5.0.tgz#8ab3ac77a1e413e64b80c51b8d6c20e6c79da3f5"
+  integrity sha512-tGU6Lz04lDNH+N3AZYIWVeBza2ZSaLlZuSkzi38zSFSuh6DgVqBdqgkX+OS+jg1vwlw5XzS5MASY44fr9C12Yg==
+
 "@types/node@^18.7.10":
   version "18.11.14"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.11.14.tgz#a8571b25f3a31e9ded14e3ab9488509adef831d8"
@@ -663,6 +668,11 @@ katex@^0.16.4:
   integrity sha512-WudRKUj8yyBeVDI4aYMNxhx5Vhh2PjpzQw1GRu/LVGqL4m1AxwD1GcUp0IMbdJaf5zsjtj8ghP0DOQRYhroNkw==
   dependencies:
     commander "^8.0.0"
+
+keyboardjs@^2.7.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/keyboardjs/-/keyboardjs-2.7.0.tgz#d4f6a56d9f3f1822d7383c6d2d39b12f534ffb2c"
+  integrity sha512-3tiQuAoLM1M5Xyo/eQVaqsq9joByTRkB0Byga+0S7BYJvY4HIlfW0SofOj4a20YSAFjv0SIFU/lw+Qjp6KYHPA==
 
 magic-string@^0.25.7:
   version "0.25.9"

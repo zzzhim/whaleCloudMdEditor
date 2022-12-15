@@ -35,6 +35,7 @@ import prettier from "prettier"
 import parserBabel from "prettier/parser-babel"
 import parserMarkdown from "prettier/parser-markdown"
 import parserHtml from "prettier/parser-html"
+import keyboardjs from "keyboardjs"
 
 const plugins = [
   parserBabel,
@@ -67,6 +68,10 @@ const handleGetMarkdown = (format: 'markdown' | 'html' = 'markdown') => {
   }
 
   
+}
+
+const atrlAndS = (e: keyboardjs.KeyEvent | undefined) => {
+  console.log(e, '组合键')
 }
 
 onMounted(() => {
@@ -105,7 +110,7 @@ onMounted(() => {
       uml,
     ],
     customHTMLRenderer: {
-      katex(node) {
+      katex(node) { // 科学公式
         const html = katex.renderToString(node.literal!, {
           displayMode: true, // 禁用显示模式
           throwOnError: false,
@@ -124,13 +129,22 @@ onMounted(() => {
           { type: 'closeTag', tagName: 'div', outerNewLine: true }
         ]
       },
+    },
+    events: {
+      focus(editorType) {
+        keyboardjs.bind('ctrl + s', atrlAndS)
+      },
+      blur(editorType) {
+        keyboardjs.unbind('ctrl + s', atrlAndS)
+      },
     }
   }) as EditorCore
   
-  // const target = editor.value
+  const target = editor.value
 
   // 执行命令 2级标题
   // target!.exec("heading", { level: 2 })
+
 })
 
 onUnmounted(() => {

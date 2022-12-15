@@ -19,6 +19,7 @@
     "@toast-ui/editor-plugin-uml": "^3.0.1",
     "highlight.js": "^11.7.0",
     "katex": "^0.16.4",
+    "keyboardjs": "^2.7.0",
     "pinia": "^2.0.28",
     "prettier": "^2.8.1",
     "prismjs": "^1.29.0",
@@ -28,6 +29,7 @@
   "devDependencies": {
     "@tauri-apps/cli": "^1.2.2",
     "@types/katex": "^0.14.0",
+    "@types/keyboardjs": "^2.5.0",
     "@types/node": "^18.7.10",
     "@types/prettier": "^2.7.1",
     "@types/prismjs": "^1.26.0",

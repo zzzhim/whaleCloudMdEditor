@@ -72,7 +72,7 @@ const handleGetMarkdown = (format: 'markdown' | 'html' = 'markdown') => {
 onMounted(() => {
   editor.value = Editor.factory({
     el: viewer.value!,
-    height: '100vh',
+    // height: '100vh',
     viewer: false,
     initialEditType: 'markdown',
     initialValue: '',
@@ -144,7 +144,7 @@ onUnmounted(() => {
   .viewer {
 
     .toastui-editor-toolbar {
-      // display: none;
+      display: none;
     }
 
     .toastui-editor-defaultUI {
@@ -160,8 +160,10 @@ onUnmounted(() => {
 <style lang="scss" scoped>
   .editor {
     width: 100%;
+    height: 100%;
     padding-top: 40px;
     position: relative;
+    box-sizing: border-box;
 
     .toolbar {
       width: 90%;
@@ -177,12 +179,7 @@ onUnmounted(() => {
 
     .viewer {
       width: 100%;
-      // height: 100vh;
-
-
-      & .toastui-editor-toolbar {
-        display: none;
-      }
+      height: calc(100vh - 40px) !important;
     }
   }
 </style>

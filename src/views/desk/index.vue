@@ -1,6 +1,8 @@
 <template>
   <div class="page">
-    <div class="editor">
+    <Sidebar />
+
+    <div class="content">
       <Editor />
     </div>
   </div>
@@ -11,6 +13,7 @@
 import { onMounted } from "vue"
 // export { default as Editor } from "@/components/Editor/index.vue"
 import Editor from "@/components/Editor/index.vue"
+import Sidebar from "@/components/Sidebar/index.vue"
 
 
 // defineComponent({
@@ -25,10 +28,14 @@ onMounted(() => {
 
 <style lang="scss" scoped>
   .page {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     width: 100%;
 
-    .editor {
-      width: 100%;
+    .content {
+      width: calc(100% - 40px);
+      background-color: #FFFFFF;
     }
   }
 </style>

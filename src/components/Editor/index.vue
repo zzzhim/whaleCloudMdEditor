@@ -1,6 +1,6 @@
 <template>
   <div class="editor">
-    <div class="toolbar" @click="() => handleGetMarkdown()">
+    <div class="toolbar">
       
     </div>
     <div id="viewer" class="viewer" ref="viewer"></div>
@@ -26,56 +26,22 @@ import chart from '@toast-ui/editor-plugin-chart'
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax'
 import tableMergedCell from '@toast-ui/editor-plugin-table-merged-cell'
 import uml from '@toast-ui/editor-plugin-uml'
-import { onMounted, defineComponent, ref, onUnmounted, computed } from "vue"
+import { onMounted, ref, onUnmounted, computed, nextTick } from "vue"
 import Prism from 'prismjs'
 import katex from "katex"
 import "katex/dist/katex.min.css"
 
-import prettier from "prettier"
-import parserBabel from "prettier/parser-babel"
-import parserMarkdown from "prettier/parser-markdown"
-import parserHtml from "prettier/parser-html"
 import keyboardjs from "keyboardjs"
-
-const plugins = [
-  parserBabel,
-  parserMarkdown,
-  parserHtml,
-]
+import { useHotKeyStore } from '@/store/modules/hot_key'
+import { useTuiEditorStore } from '@/store/modules/tui_editor'
 
 const viewer = ref<HTMLElement | null>(null)
-const editor = ref<EditorCore>()
-
-/**
- * 
- * 获取编辑器内容
- */
-const handleGetMarkdown = (format: 'markdown' | 'html' = 'markdown') => {
-  if(format === "markdown") {
-    const text = editor.value?.getMarkdown()
-
-    const formatText = prettier.format(text ?? '', { parser: "mdx", plugins })
-
-    return formatText
-  }else if(format === "html") {
-    const html = editor.value?.getHTML()
-
-    const formatText = prettier.format(html ?? '', { parser: "html", plugins })
-    console.log('---------------')
-    console.log(formatText)
-
-    return html
-  }
-
-  
-}
-
-const atrlAndS = (e: keyboardjs.KeyEvent | undefined) => {
-  console.log(e, '组合键')
-}
+const hotKey = useHotKeyStore()
+const TuiEditorStore = useTuiEditorStore()
+const tuiEditor = computed(() => TuiEditorStore.tuiEditor)
 
 onMounted(() => {
-  editor.value = Editor.factory({
+  const editor = Editor.factory({
     el: viewer.value!,
     // height: '100vh',
     viewer: false,
@@ -132,24 +98,45 @@ onMounted(() => {
     },
     events: {
       focus(editorType) {
-        keyboardjs.bind('ctrl + s', atrlAndS)
+        // 绑定键盘快捷键
+        keyboardjs.bind('ctrl + s', hotKey.ctrlAndS)
+
+        keyboardjs.bind('alt + 1', hotKey.altAnd1)
+        keyboardjs.bind('alt + 2', hotKey.altAnd2)
+        keyboardjs.bind('alt + 3', hotKey.altAnd3)
+        keyboardjs.bind('alt + 4', hotKey.altAnd4)
+        keyboardjs.bind('alt + 5', hotKey.altAnd5)
+        keyboardjs.bind('alt + 6', hotKey.altAnd6)
       },
       blur(editorType) {
-        keyboardjs.unbind('ctrl + s', atrlAndS)
+        // 卸载键盘快捷键
+        keyboardjs.unbind('ctrl + s', hotKey.ctrlAndS)
+
+        keyboardjs.unbind('alt + 1', hotKey.altAnd1)
+        keyboardjs.unbind('alt + 2', hotKey.altAnd2)
+        keyboardjs.unbind('alt + 3', hotKey.altAnd3)
+        keyboardjs.unbind('alt + 4', hotKey.altAnd4)
+        keyboardjs.unbind('alt + 5', hotKey.altAnd5)
+        keyboardjs.unbind('alt + 6', hotKey.altAnd6)
       },
     }
   }) as EditorCore
-  
-  const target = editor.value
 
+  // setTuiEditor(editor)
+
+  TuiEditorStore.$patch((state) => {
+    state.tuiEditor = editor
+  })
+
+  console.log(tuiEditor, TuiEditorStore, TuiEditorStore.tuiEditor)
   // 执行命令 2级标题
   // target!.exec("heading", { level: 2 })
 
 })
 
 onUnmounted(() => {
-  if(editor && editor.value) {
-    editor.value.destroy()
+  if(tuiEditor && tuiEditor.value) {
+    tuiEditor.value?.destroy()
   }
 })
 </script>

@@ -23,6 +23,8 @@
     "pinia": "^2.0.28",
     "prettier": "^2.8.1",
     "prismjs": "^1.29.0",
+    "tauri-plugin-fs-watch-api": "github:tauri-apps/tauri-plugin-fs-watch#dev",
+    "tauri-plugin-store-api": "https://github.com/tauri-apps/tauri-plugin-store#dev",
     "vue": "^3.2.45",
     "vue-router": "4"
   },

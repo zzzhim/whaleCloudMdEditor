@@ -17,9 +17,14 @@
     <div class="menu" v-show="sidebarStore.showMenu">
       <template v-if="tree">
         <section class="box">
-          <div class="resource">
-            <Tree :tree="tree" />
-          </div>
+            <div class="resource">
+              <Tree :tree="tree" />
+              <!-- <Scroll>
+                <div>
+                  <Tree :tree="tree" />
+                </div>
+              </Scroll> -->
+            </div>
         </section>
       </template>
 
@@ -44,6 +49,7 @@ import { openFolder } from '@/utils/dialog'
 import { getDirName, getFileList } from '@/utils/path'
 import { FileEntry } from '@tauri-apps/api/fs'
 import { filterSidebarFile } from "@/utils/filter"
+import Scroll from "@/components/Scroll/index.vue"
 
 const sidebarStore = useSidebarStore()
 const tree = computed((): FileEntry | null => {
@@ -163,6 +169,7 @@ const handleOpenFolder = async () => {
         align-items: center;
         width: 100%;
         height: 100%;
+        overflow: hidden;
 
         .btn {
           width: 100px;

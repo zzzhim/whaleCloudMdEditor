@@ -4,7 +4,7 @@ import { FileEntry } from "@tauri-apps/api/fs"
 export const filterSidebarFile = (fileList: FileEntry[]) => {
   const list = fileList.filter(item => {
     if(Array.isArray(item.children)) {
-      return true
+      return item.name && item.name[0] !== '.'
     }
 
     const arr = item.name?.split('.') ?? []

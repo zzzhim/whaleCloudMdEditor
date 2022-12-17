@@ -15,10 +15,10 @@
     </div>
 
     <div class="menu" v-show="sidebarStore.showMenu">
-      <template v-if="menu">
+      <template v-if="tree">
         <section class="box">
           <div class="resource">
-            
+            <Tree :tree="tree" />
           </div>
         </section>
       </template>
@@ -33,6 +33,7 @@
 </template>
 
 <script setup lang="ts">
+import Tree from "./tree.vue"
 import DocumentIcon from '@/svg/icons/document.svg?component'
 import SearchIcon from '@/svg/icons/search.svg?component'
 import SettingIcon from '@/svg/icons/setting.svg?component'
@@ -44,7 +45,7 @@ import { getDirName, getFileList } from '@/utils/path'
 import { FileEntry } from '@tauri-apps/api/fs'
 
 const sidebarStore = useSidebarStore()
-const menu = computed((): FileEntry | null => {
+const tree = computed((): FileEntry | null => {
   if(sidebarStore.fileDir) {
 
     if(Array.isArray(sidebarStore.fileList) && sidebarStore.fileList.length > 0) {
@@ -81,9 +82,11 @@ const handleOpen = () => {
 const handleOpenFolder = async () => {
   const dirPath = await openFolder() as string
 
+  const arr = dirPath.split('\\')
+
   const fileDir: FileEntry = {
     path: dirPath,
-    name: await getDirName(dirPath)
+    name: arr[arr.length - 1]
   }
 
   const fileList = await getFileList(dirPath)

@@ -5,15 +5,15 @@
         <FolderIcon class="icon" />
       </template>
 
-      <template v-else-if="iconType === 'md'">
+      <template v-else-if="markdownSuffix.includes(iconType)">
         <MdIcon class="icon" />
       </template>
 
-      <template v-else-if="iconType === 'png'">
+      <template v-else-if="imageSuffix.includes(iconType)">
         <ImageIcon class="icon" />
       </template>
 
-      <label class="label">{{ tree.name }}</label>
+      <label class="label" :title="tree.name">{{ tree.name }}</label>
     </div>
 
     <div
@@ -33,6 +33,7 @@ import MdIcon from '@/svg/icons/md.svg?component'
 import ImageIcon from '@/svg/icons/image.svg?component'
 import { FileEntry } from '@tauri-apps/api/fs'
 import { onMounted, computed } from 'vue'
+import { imageSuffix, markdownSuffix } from '@/config'
 
 const props = withDefaults(defineProps<{
   tree: FileEntry

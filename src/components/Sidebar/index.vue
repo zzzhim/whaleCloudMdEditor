@@ -43,6 +43,7 @@ import { computed, onMounted } from 'vue'
 import { openFolder } from '@/utils/dialog'
 import { getDirName, getFileList } from '@/utils/path'
 import { FileEntry } from '@tauri-apps/api/fs'
+import { filterSidebarFile } from "@/utils/filter"
 
 const sidebarStore = useSidebarStore()
 const tree = computed((): FileEntry | null => {
@@ -93,7 +94,7 @@ const handleOpenFolder = async () => {
 
   if(Array.isArray(fileList) && fileList.length > 0) {
     sidebarStore.$patch(state => {
-      state.fileList = fileList
+      state.fileList = filterSidebarFile(fileList)
       state.fileDir = fileDir
     })
   }

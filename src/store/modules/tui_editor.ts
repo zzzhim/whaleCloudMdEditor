@@ -35,8 +35,6 @@ export const useTuiEditorStore = defineStore('store/tui_editor', () => {
   
       return html
     }
-  
-    
   }
 
   return { tuiEditor, getTuiEditorContent }

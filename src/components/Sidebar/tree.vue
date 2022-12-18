@@ -63,11 +63,15 @@ import FolderOpenIcon from '@/svg/icons/folder-open.svg?component'
 import MdIcon from '@/svg/icons/md.svg?component'
 import ImageIcon from '@/svg/icons/image.svg?component'
 import { FileEntry } from '@tauri-apps/api/fs'
-import { onMounted, computed, ref } from 'vue'
+import { onMounted, computed, ref, toRefs } from 'vue'
 import { imageSuffix, markdownSuffix } from '@/config'
 import { getFileList } from '@/utils/path'
 import { filterSidebarFile } from '@/utils/filter'
 import Scroll from "@/components/Scroll/index.vue"
+import { useTuiEditorStore } from '@/store/modules/tui_editor'
+import { getMdFileContent } from '@/utils/fs'
+import { emitter } from '@/utils/emitter'
+import { useTabsStore } from '@/store/modules/tabs'
 
 const props = withDefaults(defineProps<{
   tree: FileEntry
@@ -76,6 +80,7 @@ const props = withDefaults(defineProps<{
   index: 0
 })
 
+const tabsState = useTabsStore()
 const expand = ref<boolean>(props.index === 0)
 
 const tree = computed(() => props.tree)
@@ -104,8 +109,44 @@ const handleClick = async () => {
 
     return 
   }
-}
 
+  const arr = tree.value.name?.split('.') ?? []
+
+  const suffix = arr[arr?.length - 1].toLocaleLowerCase()
+
+  if(markdownSuffix.includes(suffix)) { // markdown 格式
+    const path = tree.value?.path
+
+    const content = await getMdFileContent(path)
+
+    const find = tabsState.tabs.find(item => item.path === tree.value.path)
+
+    if(!find) {
+      arr.pop()
+
+      const tab = {
+        ...tree.value,
+        title: arr.join('.'),
+        content: content ?? '',
+      }
+
+      tabsState.$patch(state => {
+        state.tabs = [
+          ...state.tabs,
+          tab
+        ]
+
+        state.activeTab = tab.path
+      })
+    }else {
+      tabsState.$patch(state => {
+        state.activeTab = find.path
+      })
+    }
+
+    return 
+  }
+}
 
 onMounted(() => {
 })
@@ -145,7 +186,7 @@ onMounted(() => {
       box-sizing: content-box;
       width: 15px;
       height: 15px;
-      padding-left: 2px;
+      padding-left: 5px;
       padding-right: 5px;
 
       .icon {
@@ -157,7 +198,7 @@ onMounted(() => {
 
 
     .label {
-      width: calc(100% - 22px);
+      width: calc(100% - 25px);
       height: 30px;
       color: #666666;
       font-size: 12px;

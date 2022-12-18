@@ -1,8 +1,8 @@
 <template>
   <div class="editor">
-    <div class="toolbar">
+    <!-- <div class="toolbar">
       
-    </div>
+    </div> -->
     <div id="viewer" class="viewer" ref="viewer"></div>
   </div>
 </template>
@@ -17,7 +17,7 @@ import 'tui-color-picker/dist/tui-color-picker.css'
 import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css'
 import '@toast-ui/editor-plugin-table-merged-cell/dist/toastui-editor-plugin-table-merged-cell.css'
 
-import Editor, { EditorCore, Viewer } from '@toast-ui/editor'
+import Editor, { EditorCore } from '@toast-ui/editor'
 // import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight'
 // 不高亮替换
 import codeSyntaxHighlight from '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin-code-syntax-highlight-all'
@@ -26,7 +26,7 @@ import chart from '@toast-ui/editor-plugin-chart'
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax'
 import tableMergedCell from '@toast-ui/editor-plugin-table-merged-cell'
 import uml from '@toast-ui/editor-plugin-uml'
-import { onMounted, ref, onUnmounted, computed, nextTick } from "vue"
+import { onMounted, ref, onUnmounted, computed, nextTick, watch, toRefs } from "vue"
 import Prism from 'prismjs'
 import katex from "katex"
 import "katex/dist/katex.min.css"
@@ -34,11 +34,53 @@ import "katex/dist/katex.min.css"
 import keyboardjs from "keyboardjs"
 import { useHotKeyStore } from '@/store/modules/hot_key'
 import { useTuiEditorStore } from '@/store/modules/tui_editor'
+import { emitter } from '@/utils/emitter'
+import { useTabsStore } from '@/store/modules/tabs'
+import { debounce } from 'throttle-debounce'
 
 const viewer = ref<HTMLElement | null>(null)
 const hotKey = useHotKeyStore()
 const TuiEditorStore = useTuiEditorStore()
 const tuiEditor = computed(() => TuiEditorStore.tuiEditor)
+const tabsState = useTabsStore()
+const activeTab = computed(() => tabsState.activeTab)
+
+const patchTabs = (path: string = tabsState.activeTab) => {
+  const list = tabsState.tabs.map(item => {
+    // if(item.path === tabsState.activeTab) {
+    if(item.path === path) {
+      return {
+        ...item,
+        content: tuiEditor.value?.getMarkdown() ?? ''
+      }
+    }
+
+    return item
+  })
+
+  tabsState.$patch(state => {
+    state.tabs = list
+  })
+}
+
+const contentChange = debounce(1000, patchTabs)
+
+watch(activeTab, (newVal, oldVal) => {
+  if(oldVal) {
+    contentChange.cancel()
+
+    patchTabs(oldVal)
+  }
+
+  if(newVal) {
+    const find = tabsState.tabs.find(item => item.path === newVal)
+
+    console.log(find)
+    if(find) {
+      emitter.emit("setMarkdown", find.content)
+    }
+  }
+})
 
 onMounted(() => {
   const editor = Editor.factory({
@@ -47,6 +89,7 @@ onMounted(() => {
     viewer: false,
     initialEditType: 'markdown',
     initialValue: '',
+    placeholder: '请输入您的内容~',
     previewHighlight: true,
     previewStyle: "vertical",
     // toolbarItems: [],
@@ -119,6 +162,9 @@ onMounted(() => {
         keyboardjs.unbind('alt + 5', hotKey.altAnd5)
         keyboardjs.unbind('alt + 6', hotKey.altAnd6)
       },
+      change(editorType) {
+        contentChange()
+      },
     }
   }) as EditorCore
 
@@ -128,10 +174,9 @@ onMounted(() => {
     state.tuiEditor = editor
   })
 
-  console.log(tuiEditor, TuiEditorStore, TuiEditorStore.tuiEditor)
-  // 执行命令 2级标题
-  // target!.exec("heading", { level: 2 })
-
+  emitter.on("setMarkdown", (content) => {
+    editor.setMarkdown(content as string)
+  })
 })
 
 onUnmounted(() => {
@@ -145,7 +190,7 @@ onUnmounted(() => {
   .viewer {
 
     .toastui-editor-toolbar {
-      display: none;
+      // display: none;
     }
 
     .toastui-editor-defaultUI {
@@ -162,7 +207,7 @@ onUnmounted(() => {
   .editor {
     width: 100%;
     height: 100%;
-    padding-top: 40px;
+    // padding-top: 40px;
     position: relative;
     box-sizing: border-box;
 
@@ -180,7 +225,7 @@ onUnmounted(() => {
 
     .viewer {
       width: 100%;
-      height: calc(100vh - 40px) !important;
+      height: calc(100% - 40px) !important;
     }
   }
 </style>

@@ -1,3 +1,5 @@
+import { writeFile } from './../../utils/editor_command';
+import { useTabsStore } from './tabs';
 import { useTuiEditorStore } from './tui_editor'
 import keyboardjs from "keyboardjs"
 import { defineStore } from "pinia"
@@ -7,19 +9,24 @@ import { saveFile } from '@/utils/editor_command'
 export const useHotKeyStore = defineStore("store/hot_key", () => {
   const tuiEditorState = useTuiEditorStore()
   const tuiEditor = computed(() => tuiEditorState.tuiEditor)
+  const tabsState = useTabsStore()
 
   /**
    * 
    * 保存文件
    */
   const ctrlAndS = (e: keyboardjs.KeyEvent | undefined) => {
-    try {
-      const content = tuiEditorState.getTuiEditorContent("markdown")
+      try {
+        const content = tuiEditorState.getTuiEditorContent("markdown")
 
-      saveFile(content ?? '')
-    } catch (error) {
-      console.log(error)
-    }
+        if(!tabsState.activeTab) {
+          saveFile(content ?? '')
+        }else {
+          writeFile(tabsState.activeTab, content ?? '')
+        }
+      } catch (error) {
+        console.log(error)
+      }
   }
 
   const ctrlAndX = (e: keyboardjs.KeyEvent | undefined) => {

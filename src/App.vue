@@ -1,5 +1,8 @@
 <template>
   <div class="main">
+    <!-- {{ created }}
+    <br>
+    {{ drop }} -->
     <router-view />
   </div>
 </template>
@@ -9,6 +12,10 @@
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 import { useRouter } from "vue-router"
 import { Store } from 'tauri-plugin-store-api'
+import { ref } from "vue"
+
+const created = ref();
+const drop = ref();
 
 (async () => {
   const store = new Store('.settings.dat')
@@ -17,6 +24,21 @@ import { Store } from 'tauri-plugin-store-api'
 
   console.log(val, '-----store-----')
 })()
+
+window.__TAURI__?.event?.listen(window.__TAURI__?.event?.TauriEvent.WINDOW_CREATED, (e) => {
+  console.log(e, "created")
+  created.value = `${e} created`
+})
+
+window.__TAURI__?.event?.listen(window.__TAURI__?.event?.TauriEvent.WINDOW_FILE_DROP, (e) => {
+  console.log(e, "file-drop")
+  drop.value = `${e} drop`
+})
+
+window.__TAURI__?.event?.listen(window.__TAURI__?.event?.TauriEvent.WINDOW_FILE_DROP, (e) => {
+  console.log(e, "file-drop")
+  drop.value = `${e} drop`
+})
 
 
 </script>

@@ -47,7 +47,6 @@ const activeTab = computed(() => tabsState.activeTab)
 
 const patchTabs = (path: string = tabsState.activeTab) => {
   const list = tabsState.tabs.map(item => {
-    // if(item.path === tabsState.activeTab) {
     if(item.path === path) {
       return {
         ...item,
@@ -75,10 +74,11 @@ watch(activeTab, (newVal, oldVal) => {
   if(newVal) {
     const find = tabsState.tabs.find(item => item.path === newVal)
 
-    console.log(find)
     if(find) {
       emitter.emit("setMarkdown", find.content)
     }
+  }else {
+    emitter.emit("setMarkdown", '')
   }
 })
 

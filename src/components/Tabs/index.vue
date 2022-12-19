@@ -6,11 +6,14 @@
           :class="[
             'item',
             {
-              active: tabsState.activeTab === item.path
+              active: activeTab === item.path
             }
           ]"
           @click="handleClick(item.path)"
-        >{{ item.name }}</li>
+        >
+          <span class="text">{{ item.name }}</span>
+          <closeIcon class="close" @click.stop="handleClose(item.path)" />
+        </li>
       </template>
     </ul>
   </div>
@@ -18,8 +21,11 @@
 
 <script setup lang="ts">
   import { useTabsStore } from '@/store/modules/tabs'
+  import closeIcon from '@/svg/icons/close.svg?component'
+  import { computed, nextTick } from 'vue'
 
   const tabsState = useTabsStore()
+  const activeTab = computed(() => tabsState.activeTab)
 
   const handleClick = (path: string) => {
     tabsState.$patch(state => {
@@ -27,6 +33,26 @@
     })
   }
 
+  const handleClose = (path: string) => {
+    const tabs = tabsState.tabs.filter(item => item.path !== path)
+
+    if (tabs.length) {
+      tabsState.$patch(state => {
+        state.tabs = tabs
+      })
+
+      if(activeTab.value === path) {
+        nextTick(() => {
+          handleClick(tabs[0].path)
+        })
+      }
+    } else {
+      tabsState.$patch(state => {
+        state.tabs = tabs
+        state.activeTab = ''
+      })
+    }
+  }
 </script>
 
 <style lang="scss" scoped>
@@ -45,12 +71,37 @@
       padding: 0px 20px;
 
       .item {
-        font-size: 12px;
-        color: #666666;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
         margin-left: 20px;
         padding-bottom: 10px;
         cursor: pointer;
         position: relative;
+        
+        .text {
+          font-size: 12px;
+          color: #666666;
+        }
+
+        .close {
+          display: none;
+          width: 12px;
+          height: 12px;
+          margin-left: 5px;
+          fill: #666666;
+        }
+
+        &:hover {
+          .text {
+            color: #58D68D;
+          }
+
+          .close {
+            display: inline-block;
+            fill: #58D68D;
+          }
+        }
 
         &.active {
           color: #58D68D;
